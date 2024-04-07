@@ -1,11 +1,9 @@
 package com.dawidzjava.SpringHellpDesk;
 
 import com.dawidzjava.SpringHellpDesk.dao.RoleDao;
+import com.dawidzjava.SpringHellpDesk.dao.TicketDao;
 import com.dawidzjava.SpringHellpDesk.dao.UserDao;
-import com.dawidzjava.SpringHellpDesk.entity.Client;
-import com.dawidzjava.SpringHellpDesk.entity.Employee;
-import com.dawidzjava.SpringHellpDesk.entity.Role;
-import com.dawidzjava.SpringHellpDesk.entity.User;
+import com.dawidzjava.SpringHellpDesk.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,21 +26,29 @@ public class SpringHellpDeskApplication {
 
 	@Bean
 	@Autowired
-	public CommandLineRunner commandLineRunner(RoleDao roleDao, UserDao userDao) {
+	public CommandLineRunner commandLineRunner(RoleDao roleDao, TicketDao ticketDao) {
 		return runner -> {
 			roleDao.save(new com.dawidzjava.SpringHellpDesk.entity.Role("ROLE_USER"));
 			roleDao.save(new com.dawidzjava.SpringHellpDesk.entity.Role("ROLE_EMPLOYEE"));
 			roleDao.save(new com.dawidzjava.SpringHellpDesk.entity.Role("ROLE_ADMIN"));
 			Collection<Role> roles=new ArrayList<>();
 
+			Ticket ticket=new Ticket("Drukarka nie działa","trzeszczy a nie drukuje",2);
+
+
 			roles.add(roleDao.findRoleByName("ROLE_USER"));
-			userDao.save(new Employee("123","Adam","Malysz",passwordEncoder.encode("123"),true,roles));
+			Employee employee = new Employee("123", "Adam", "Malysz", passwordEncoder.encode("123"), true, roles);
 
 			roles.add(roleDao.findRoleByName("ROLE_ADMIN"));
 			roles.add(roleDao.findRoleByName("ROLE_EMPLOYEE"));
 
-			User user=new Client("qwe","Jane","Ahonen", passwordEncoder.encode("qwe"), true,roles);
-			userDao.save(user);
+			Client user=new Client("qwe","Jane","Ahonen", passwordEncoder.encode("qwe"), true,roles);
+			ticket.addEmployee(employee);
+			ticket.setClient(user);
+
+			ticketDao.save(ticket);
+
+
 
 		};
 	}
